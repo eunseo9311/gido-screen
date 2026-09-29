@@ -8,7 +8,9 @@
 | `/admin` | 담당자 | 올라온 기도를 고치거나 송출·숨김합니다 |
 | `/screen` | 방송실 모니터 | 승인된 기도를 7초씩 한 번만 보여 줍니다. 다 나가면 안내 화면에서 새 기도를 기다립니다 |
 
-`config.js`의 `firebaseConfig`가 `null`이면 체험 모드입니다. 한 브라우저 안의 탭끼리만 공유되니 모양과 흐름만 확인할 때 쓰세요.
+Firebase 프로젝트 `sarang-gido-screen`(eunseosong4916@gmail.com 소유, 무료 Spark 요금제)에 연결되어 있습니다. `config.js`의 `firebaseConfig`를 `null`로 바꾸면 체험 모드(한 브라우저 안에서만 저장)로 돌아갑니다.
+
+담당자를 추가하려면 `firestore.rules`의 이메일 목록에 넣고 `firebase deploy --only firestore:rules`로 올린 뒤, 콘솔 Authentication → 사용자에서 같은 이메일로 계정을 만드세요.
 
 ## Firebase 준비 (한 번, 약 10분)
 

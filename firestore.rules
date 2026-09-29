@@ -5,7 +5,7 @@ service cloud.firestore {
     // 담당자 이메일. Firebase 콘솔에서 만든 담당자 계정 이메일로 바꾸세요. 여러 명이면 쉼표로 추가합니다.
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email in ['담당자이메일@example.com'];
+        && request.auth.token.email in ['eunseosong4916@gmail.com'];
     }
 
     match /prayers/{id} {
