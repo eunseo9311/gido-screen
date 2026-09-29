@@ -82,8 +82,6 @@ body.idle { cursor: none; }
 .slide.welcome .who::before { content: none; }
 .foot { position: absolute; left: 6cqw; right: 6cqw; bottom: 5.5cqh; display: flex; align-items: flex-end; justify-content: space-between; gap: 3cqw; }
 .progress { flex: 1; display: grid; gap: 1.4cqh; }
-.bar { height: 3px; background: rgba(26, 31, 92, .12); border-radius: 3px; overflow: hidden; }
-.bar i { display: block; height: 100%; width: 0; background: var(--red); }
 .count { font: 400 2cqh var(--font-ui); color: var(--soft); font-variant-numeric: tabular-nums; letter-spacing: .08em; }
 .qr { display: flex; align-items: center; gap: 1.6cqw; }
 .qr .label { font: 400 2.2cqh/1.5 var(--font-ui); color: var(--soft); text-align: right; }
@@ -92,8 +90,7 @@ body.idle { cursor: none; }
 .qr .code img, .qr .code canvas { width: 100% !important; height: 100% !important; display: block; }
 .hintbar { position: absolute; top: 2cqh; right: 2cqw; font: 1.8cqh var(--font-ui); color: var(--soft); opacity: .8; transition: opacity .6s; }
 body.idle .hintbar { opacity: 0; }
-.paused .bar i { background: var(--soft); }
-@media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
+.paused @media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
 </style>
 </head>
 <body>
@@ -107,7 +104,7 @@ body.idle .hintbar { opacity: 0; }
   <section class="slide" id="a"><p class="text"></p><p class="who"></p></section>
   <section class="slide" id="b"><p class="text"></p><p class="who"></p></section>
   <div class="foot">
-    <div class="progress"><div class="count" id="count"></div><div class="bar"><i id="bar"></i></div></div>
+    <div class="progress"><div class="count" id="count"></div></div>
     <div class="qr" id="qr"><div class="label"><b>기도를 올려 주세요</b>휴대폰 카메라로 찍으면 됩니다</div><div class="code" id="code"></div></div>
   </div>
   <div class="hintbar" id="hint">화면을 누르면 전체화면 · ← → 넘기기 · 스페이스 멈춤</div>
@@ -189,12 +186,7 @@ function show(step = 1) {
 function restartClock() {
   clearTimeout(timer);
   startedAt = performance.now();
-  const bar = $("bar");
-  bar.style.transition = "none"; bar.style.width = "0";
   if (paused || !prayers.length) return;
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    bar.style.transition = `width ${SEC}s linear`; bar.style.width = "100%";
-  }));
   timer = setTimeout(() => show(1), SEC * 1000);
 }
 
