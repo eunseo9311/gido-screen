@@ -13,7 +13,7 @@ export const firebaseConfig = {
 */
 
 // 송출 화면 한 장이 머무는 시간(초). 주소 뒤에 ?sec=12 를 붙여도 바뀝니다.
-export const SLIDE_SECONDS = 9;
+export const SLIDE_SECONDS = 7;
 
 // 송출 화면 제목
 export const SCREEN_TITLE = "오늘 함께 드리는 기도";

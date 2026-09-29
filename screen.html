@@ -88,8 +88,6 @@ body.idle { cursor: none; }
 .qr .label b { display: block; color: var(--red); font-weight: 700; font-size: 2.6cqh; }
 .qr .code { background: #fff; padding: .8cqh; border-radius: 1cqh; width: 13cqh; height: 13cqh; box-shadow: 0 .6cqh 2cqh rgba(26, 31, 92, .12); }
 .qr .code img, .qr .code canvas { width: 100% !important; height: 100% !important; display: block; }
-.hintbar { position: absolute; top: 2cqh; right: 2cqw; font: 1.8cqh var(--font-ui); color: var(--soft); opacity: .8; transition: opacity .6s; }
-body.idle .hintbar { opacity: 0; }
 .paused @media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
 </style>
 </head>
@@ -107,7 +105,6 @@ body.idle .hintbar { opacity: 0; }
     <div class="progress"><div class="count" id="count"></div></div>
     <div class="qr" id="qr"><div class="label"><b>기도를 올려 주세요</b>휴대폰 카메라로 찍으면 됩니다</div><div class="code" id="code"></div></div>
   </div>
-  <div class="hintbar" id="hint">화면을 누르면 전체화면 · → 다음 기도 · 스페이스 멈춤</div>
 </div>
 
 <script type="module">
