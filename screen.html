@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>기도 송출 화면</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* 16:9 무대 하나. 하늘·분홍·보라 빛이 천천히 섞이는 밝은 바탕에 기도 한 장 */
+:root {
+  --sky: #bfe3ff;
+  --pink: #ffd3e6;
+  --lilac: #dccdff;
+  --mist: #f7f5ff;
+  --ink: #1a1f5c;
+  --soft: #6a6f9c;
+  --red: #e5004f;
+  --font-display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --font-ui: "Noto Sans KR", system-ui, sans-serif;
+  --fade: 1400ms;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: var(--mist); overflow: hidden; }
+body { display: grid; place-items: center; color: var(--ink); font-family: var(--font-ui); }
+body.idle { cursor: none; }
+.stage {
+  width: min(100vw, calc(100vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+  position: relative;
+  container-type: size;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--sky), var(--mist) 45%, var(--pink));
+  isolation: isolate;
+}
+/* 천천히 떠다니는 빛 세 덩이 */
+.aura { position: absolute; inset: -20%; z-index: -1; filter: blur(6cqh); }
+.aura i { position: absolute; border-radius: 50%; opacity: .85; mix-blend-mode: multiply; }
+.aura i:nth-child(1) { width: 60cqw; height: 60cqw; left: 5%; top: 10%; background: radial-gradient(circle, var(--sky), transparent 65%); animation: drift1 38s ease-in-out infinite alternate; }
+.aura i:nth-child(2) { width: 55cqw; height: 55cqw; right: 2%; top: 0; background: radial-gradient(circle, var(--pink), transparent 65%); animation: drift2 44s ease-in-out infinite alternate; }
+.aura i:nth-child(3) { width: 65cqw; height: 65cqw; left: 25%; bottom: -5%; background: radial-gradient(circle, var(--lilac), transparent 65%); animation: drift3 50s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate(18cqw, 12cqh) scale(1.15); } }
+@keyframes drift2 { to { transform: translate(-20cqw, 18cqh) scale(.9); } }
+@keyframes drift3 { to { transform: translate(-12cqw, -16cqh) scale(1.1); } }
+/* 위에서 비껴 들어오는 빛줄기 */
+.rays { position: absolute; inset: -30cqh -20cqw 0; z-index: -1; pointer-events: none;
+  background: repeating-conic-gradient(from 160deg at 42% 0%, rgba(255,255,255,0) 0deg, rgba(255,255,255,.75) 2.5deg, rgba(255,250,253,.2) 5deg, rgba(255,255,255,0) 8deg, rgba(255,255,255,0) 12deg);
+  -webkit-mask-image: radial-gradient(95% 110% at 42% 0%, #000 15%, transparent 80%);
+          mask-image: radial-gradient(95% 110% at 42% 0%, #000 15%, transparent 80%);
+  filter: blur(.7cqh); mix-blend-mode: screen; opacity: .95; transform-origin: 42% 0%;
+  animation: sway 26s ease-in-out infinite alternate, breathe 9s ease-in-out infinite alternate; }
+.glow { position: absolute; left: 30%; top: -30cqh; width: 60cqh; height: 60cqh; z-index: -1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,247,252,.5) 35%, transparent 70%); animation: breathe 9s ease-in-out infinite alternate; }
+@keyframes sway { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+@keyframes breathe { from { opacity: .6; } to { opacity: 1; } }
+/* 떠오르는 빛 알갱이 */
+.motes { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.motes i { position: absolute; bottom: -2cqh; width: var(--s); height: var(--s); border-radius: 50%;
+  background: radial-gradient(circle, #fff, rgba(255,255,255,0) 70%); opacity: 0;
+  animation: rise var(--d) linear var(--delay) infinite; }
+@keyframes rise { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: .9; } 85% { opacity: .7; } 100% { transform: translate(var(--x), -105cqh); opacity: 0; } }
+.logo { position: absolute; top: 4.6cqh; left: 5cqw; height: 5.2cqh; width: auto; }
+.title {
+  position: absolute; top: 5cqh; left: 0; right: 0; text-align: center;
+  font: 500 2.4cqh var(--font-ui); letter-spacing: .32em; color: var(--ink);
+}
+.title::after { content: ""; display: block; width: 4cqw; height: 3px; border-radius: 3px; background: var(--red); margin: 1.8cqh auto 0; }
+.slide {
+  position: absolute; inset: 15cqh 12cqw 20cqh; display: grid; place-content: center; gap: 5cqh; text-align: center;
+  opacity: 0; transform: translateY(2cqh); transition: opacity var(--fade) ease, transform var(--fade) ease;
+}
+.slide.on { opacity: 1; transform: none; }
+.slide .text { font: 400 var(--size, 5.6cqh)/1.65 var(--font-display); margin: 0; text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); text-shadow: 0 0 3cqh rgba(255,255,255,.8); }
+.slide .who { font: 500 2.8cqh var(--font-ui); color: var(--red); letter-spacing: .06em; margin: 0; }
+.slide .who::before { content: "— "; }
+.slide.welcome .who { color: var(--soft); font-weight: 400; }
+.slide.welcome .who::before { content: none; }
+.foot { position: absolute; left: 6cqw; right: 6cqw; bottom: 5.5cqh; display: flex; align-items: flex-end; justify-content: space-between; gap: 3cqw; }
+.progress { flex: 1; display: grid; gap: 1.4cqh; }
+.bar { height: 3px; background: rgba(26, 31, 92, .12); border-radius: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--red); }
+.count { font: 400 2cqh var(--font-ui); color: var(--soft); font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.qr { display: flex; align-items: center; gap: 1.6cqw; }
+.qr .label { font: 400 2.2cqh/1.5 var(--font-ui); color: var(--soft); text-align: right; }
+.qr .label b { display: block; color: var(--red); font-weight: 700; font-size: 2.6cqh; }
+.qr .code { background: #fff; padding: .8cqh; border-radius: 1cqh; width: 13cqh; height: 13cqh; box-shadow: 0 .6cqh 2cqh rgba(26, 31, 92, .12); }
+.qr .code img, .qr .code canvas { width: 100% !important; height: 100% !important; display: block; }
+.hintbar { position: absolute; top: 2cqh; right: 2cqw; font: 1.8cqh var(--font-ui); color: var(--soft); opacity: .8; transition: opacity .6s; }
+body.idle .hintbar { opacity: 0; }
+.paused .bar i { background: var(--soft); }
+@media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="rays" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="motes" id="motes" aria-hidden="true"></div>
+  <img class="logo" src="logo-sarang.png" alt="사랑의교회">
+  <div class="title" id="title">오늘 함께 드리는 기도</div>
+  <section class="slide" id="a"><p class="text"></p><p class="who"></p></section>
+  <section class="slide" id="b"><p class="text"></p><p class="who"></p></section>
+  <div class="foot">
+    <div class="progress"><div class="count" id="count"></div><div class="bar"><i id="bar"></i></div></div>
+    <div class="qr" id="qr"><div class="label"><b>기도를 올려 주세요</b>휴대폰 카메라로 찍으면 됩니다</div><div class="code" id="code"></div></div>
+  </div>
+  <div class="hintbar" id="hint">화면을 누르면 전체화면 · ← → 넘기기 · 스페이스 멈춤</div>
+</div>
+
+<script type="module">
+import store from "./store.js";
+import { SLIDE_SECONDS, SCREEN_TITLE, SUBMIT_URL } from "./config.js";
+
+const params = new URLSearchParams(location.search);
+const SEC = Math.max(4, Number(params.get("sec")) || SLIDE_SECONDS);
+const $ = (id) => document.getElementById(id);
+$("title").textContent = SCREEN_TITLE;
+
+// 빛 알갱이 뿌리기
+for (let i = 0; i < 22; i++) {
+  const m = document.createElement("i");
+  const r = (a, b) => a + Math.random() * (b - a);
+  m.style.cssText = `left:${r(0, 100)}%;--s:${r(0.6, 1.8).toFixed(2)}cqh;--d:${r(18, 34).toFixed(1)}s;--delay:${(-r(0, 34)).toFixed(1)}s;--x:${r(-8, 8).toFixed(1)}cqw`;
+  $("motes").append(m);
+}
+
+// QR: 성도용 페이지 주소
+const submitUrl = SUBMIT_URL || new URL("index.html", location.href).href;
+if (params.get("qr") === "0" || !window.QRCode) $("qr").hidden = true;
+else new QRCode($("code"), { text: submitUrl, width: 256, height: 256, colorDark: "#1a1f5c", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+
+// 재생 상태
+let prayers = [];          // 승인된 기도(승인 순)
+const fresh = [];          // 새로 승인돼 먼저 보여 줄 기도 id
+let seen = new Set();
+let currentId = null, index = -1, paused = false, timer = 0, startedAt = 0, first = true;
+const layers = [$("a"), $("b")];
+let front = 0;
+
+const WELCOME = { id: "__welcome", text: "올려 주신 기도를 함께 나눕니다", name: "" };
+
+function sizeFor(text) {
+  const n = [...text].length;
+  if (n <= 30) return "7cqh";
+  if (n <= 60) return "6cqh";
+  if (n <= 110) return "5cqh";
+  if (n <= 180) return "4.2cqh";
+  return "3.6cqh";
+}
+
+function paint(p) {
+  const next = layers[1 - front], cur = layers[front];
+  next.querySelector(".text").textContent = p.text;
+  next.querySelector(".who").textContent = p.id === WELCOME.id ? "화면 오른쪽 아래 QR로 기도를 올릴 수 있습니다" : (p.name || "익명의 기도");
+  next.style.setProperty("--size", p.id === WELCOME.id ? "6.4cqh" : sizeFor(p.text));
+  next.classList.toggle("welcome", p.id === WELCOME.id);
+  cur.classList.remove("on");
+  next.classList.add("on");
+  front = 1 - front;
+  currentId = p.id;
+  const shown = prayers.findIndex((x) => x.id === p.id);
+  $("count").textContent = prayers.length ? `${shown + 1} / ${prayers.length}` : "";
+}
+
+function pickNext(step = 1) {
+  if (!prayers.length) return WELCOME;
+  while (fresh.length) {
+    const id = fresh.shift();
+    const i = prayers.findIndex((x) => x.id === id);
+    if (i >= 0) { index = i; return prayers[i]; }
+  }
+  const cur = prayers.findIndex((x) => x.id === currentId);
+  const base = cur >= 0 ? cur : index;
+  index = ((base + step) % prayers.length + prayers.length) % prayers.length;
+  return prayers[index];
+}
+
+function show(step = 1) {
+  paint(pickNext(step));
+  restartClock();
+}
+
+function restartClock() {
+  clearTimeout(timer);
+  startedAt = performance.now();
+  const bar = $("bar");
+  bar.style.transition = "none"; bar.style.width = "0";
+  if (paused || !prayers.length) return;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    bar.style.transition = `width ${SEC}s linear`; bar.style.width = "100%";
+  }));
+  timer = setTimeout(() => show(1), SEC * 1000);
+}
+
+store.watchApproved((list) => {
+  const ids = new Set(list.map((p) => p.id));
+  if (!first) for (const p of list) if (!seen.has(p.id)) fresh.push(p.id);
+  seen = ids;
+  prayers = list;
+  const wasEmpty = currentId === WELCOME.id || currentId === null;
+  if (first) { first = false; show(1); return; }
+  if (currentId !== WELCOME.id && !ids.has(currentId)) { show(0); return; } // 지금 기도가 내려감
+  if (wasEmpty && prayers.length) { show(1); return; }
+  if (!prayers.length) { paint(WELCOME); restartClock(); return; }
+  // 지금 보이는 기도의 글이 고쳐졌으면 바로 반영
+  const now = prayers.find((p) => p.id === currentId);
+  const layer = layers[front];
+  if (now && layer.querySelector(".text").textContent !== now.text) {
+    layer.querySelector(".text").textContent = now.text;
+    layer.style.setProperty("--size", sizeFor(now.text));
+  }
+  $("count").textContent = `${prayers.findIndex((x) => x.id === currentId) + 1} / ${prayers.length}`;
+}, (err) => {
+  console.error(err);
+  $("count").textContent = "연결이 끊겼습니다. 인터넷을 확인해 주세요.";
+});
+
+// 조작
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight" || e.key === "PageDown") show(1);
+  else if (e.key === "ArrowLeft" || e.key === "PageUp") { fresh.length = 0; show(-1); }
+  else if (e.key === " ") { e.preventDefault(); paused = !paused; $("stage").classList.toggle("paused", paused); restartClock(); }
+  else if (e.key === "f") toggleFull();
+});
+$("stage").addEventListener("click", toggleFull);
+function toggleFull() {
+  if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+  else document.documentElement.requestFullscreen?.().catch(() => {});
+}
+
+// 커서·안내 숨김, 화면 꺼짐 방지
+let idleT = 0;
+const wake = () => { document.body.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add("idle"), 3000); };
+addEventListener("mousemove", wake); wake();
+let lock = null;
+async function keepAwake() { try { lock = await navigator.wakeLock?.request("screen"); } catch {} }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
+keepAwake();
+</script>
+</body>
+</html>

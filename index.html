@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>기도 올리기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 한 손으로 쓰는 세로 한 칸: 안내 → 입력 → 올리기 */
+:root {
+  --bg: #f3f5f9;
+  --paper: #ffffff;
+  --ink: #232b3a;
+  --muted: #5f6879;
+  --line: #dce1ea;
+  --accent: #02368c;
+  --accent-ink: #ffffff;
+  --glow: #e5004f;
+  --wash: linear-gradient(160deg, #e3f2ff, #f6f1ff 50%, #ffe8f1);
+  --font-display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --font-body: "Noto Sans KR", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a0f2c; --paper: #121a42; --ink: #eef1f8; --muted: #a7b0c6;
+    --line: #26305c; --accent: #86a8f2; --accent-ink: #0a0f2c; --glow: #ff4f86;
+    --wash: linear-gradient(160deg, #0d1536, #140f33 50%, #230f2c);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a0f2c; --paper: #121a42; --ink: #eef1f8; --muted: #a7b0c6;
+    --line: #26305c; --accent: #86a8f2; --accent-ink: #0a0f2c; --glow: #ff4f86;
+    --wash: linear-gradient(160deg, #0d1536, #140f33 50%, #230f2c);
+    color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+h1, h2, p, label { word-break: keep-all; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); background-image: var(--wash); color: var(--ink);
+  font: 17px/1.65 var(--font-body);
+  padding: max(28px, env(safe-area-inset-top)) 18px max(32px, env(safe-area-inset-bottom));
+  min-height: 100dvh;
+}
+main { max-width: 34rem; margin: 0 auto; display: grid; gap: 22px; }
+header { display: grid; gap: 6px; }
+.logo img { display: block; height: 34px; width: auto; margin-bottom: 10px; }
+.eyebrow { font-size: 13px; letter-spacing: .08em; color: var(--glow); font-weight: 700; }
+h1 { font: 700 30px/1.3 var(--font-display); margin: 0; text-wrap: balance; }
+.lead { margin: 0; color: var(--muted); }
+form { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 16px; }
+label { font-weight: 700; font-size: 15px; display: block; margin-bottom: 6px; }
+.hint { font-weight: 400; color: var(--muted); font-size: 14px; }
+textarea, input {
+  width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+}
+textarea { min-height: 11rem; resize: vertical; font-family: var(--font-display); font-size: 19px; line-height: 1.7; }
+textarea:focus, input:focus, button:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 1px; }
+.count { text-align: right; font-size: 13px; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.count.over { color: #c0392b; }
+button {
+  font: 700 18px var(--font-body); border: 0; border-radius: 14px; padding: 16px;
+  background: var(--glow); color: #fff; cursor: pointer;
+}
+button:disabled { opacity: .5; cursor: default; }
+.error { color: #c0392b; margin: 0; font-size: 15px; }
+.done { background: var(--paper); border: 1px solid var(--line); border-radius: 18px; padding: 28px 20px; text-align: center; display: grid; gap: 10px; }
+.done h2 { font: 700 24px var(--font-display); margin: 0; }
+.done p { margin: 0; color: var(--muted); }
+.done button { background: transparent; color: var(--glow); border: 1px solid var(--line); }
+.note { font-size: 14px; color: var(--muted); margin: 0; }
+.demo { font-size: 13px; background: color-mix(in srgb, var(--accent) 12%, transparent); padding: 8px 12px; border-radius: 10px; margin: 0; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+  <picture class="logo">
+    <source srcset="logo-sarang-light.png" media="(prefers-color-scheme: dark)">
+    <img src="logo-sarang.png" alt="사랑의교회" width="168" height="44">
+  </picture>
+    <div class="eyebrow">함께 드리는 기도</div>
+    <h1>오늘 마음에 남은 감사와 기도를 올려 주세요</h1>
+    <p class="lead">올려 주신 기도는 담당자가 확인한 뒤 예배당 화면에 한 장씩 비춰집니다.</p>
+  </header>
+
+  <form id="form" novalidate>
+    <div>
+      <label for="text">기도</label>
+      <textarea id="text" maxlength="300" placeholder="예) 오늘 목사님 말씀을 들으며 한 주를 다시 시작할 힘을 얻었습니다. 감사합니다." required></textarea>
+      <div class="count" id="count">0 / 300</div>
+    </div>
+    <div>
+      <label for="name">이름 <span class="hint">(비워 두면 익명으로 나갑니다)</span></label>
+      <input id="name" maxlength="20" autocomplete="off" placeholder="예) 김○○ 집사">
+    </div>
+    <p class="error" id="error" hidden></p>
+    <button id="submit" type="submit">기도 올리기</button>
+    <p class="note">다른 분의 실명이나 개인 사정은 적지 않도록 부탁드립니다.</p>
+  </form>
+
+  <section class="done" id="done" hidden>
+    <h2>기도를 올렸습니다</h2>
+    <p>확인을 마치면 화면에 함께 비춰집니다.</p>
+    <button id="again" type="button">기도 하나 더 올리기</button>
+  </section>
+
+  <p class="demo" id="demo" hidden>체험 모드입니다. 이 컴퓨터 안에서만 저장됩니다.</p>
+</main>
+
+<script type="module">
+import store, { isDemo, MAX_TEXT } from "./store.js";
+
+const $ = (id) => document.getElementById(id);
+const form = $("form"), text = $("text"), name = $("name"), btn = $("submit");
+const COOLDOWN_MS = 20000;
+$("demo").hidden = !isDemo;
+
+text.addEventListener("input", () => {
+  const n = [...text.value].length;
+  $("count").textContent = `${n} / ${MAX_TEXT}`;
+  $("count").classList.toggle("over", n > MAX_TEXT);
+});
+
+function showError(msg) { $("error").textContent = msg; $("error").hidden = !msg; }
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const body = text.value.trim();
+  if (!body) { showError("기도 내용을 적어 주세요."); text.focus(); return; }
+  if ([...body].length > MAX_TEXT) { showError(`${MAX_TEXT}자 안으로 줄여 주세요.`); return; }
+  let last = 0;
+  try { last = Number(localStorage.getItem("gido-last")) || 0; } catch {}
+  const wait = Math.ceil((last + COOLDOWN_MS - Date.now()) / 1000);
+  if (wait > 0) { showError(`${wait}초 뒤에 다시 올려 주세요.`); return; }
+
+  showError("");
+  btn.disabled = true; btn.textContent = "올리는 중…";
+  try {
+    await store.submit({ text: body, name: name.value.trim().slice(0, 20) });
+    try { localStorage.setItem("gido-last", String(Date.now())); } catch {}
+    form.hidden = true; $("done").hidden = false;
+    text.value = ""; text.dispatchEvent(new Event("input"));
+  } catch (err) {
+    console.error(err);
+    showError("올리지 못했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.");
+  } finally {
+    btn.disabled = false; btn.textContent = "기도 올리기";
+  }
+});
+
+$("again").addEventListener("click", () => { $("done").hidden = true; form.hidden = false; text.focus(); });
+</script>
+</body>
+</html>
