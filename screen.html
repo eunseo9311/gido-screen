@@ -128,7 +128,7 @@ for (let i = 0; i < 22; i++) {
 }
 
 // QR: 성도용 페이지 주소
-const submitUrl = SUBMIT_URL || new URL("index.html", location.href).href;
+const submitUrl = SUBMIT_URL || new URL("./", location.href).href;
 if (params.get("qr") === "0" || !window.QRCode) $("qr").hidden = true;
 else new QRCode($("code"), { text: submitUrl, width: 256, height: 256, colorDark: "#1a1f5c", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
 
