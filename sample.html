@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>함께 드리는 기도 샘플</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* 화면 전체를 채우는 무대 하나. 하늘·분홍·보라 빛이 천천히 섞이는 밝은 바탕에 기도 한 장 */
+:root {
+  --sky: #bfe3ff;
+  --pink: #ffd3e6;
+  --lilac: #dccdff;
+  --mist: #f7f5ff;
+  --ink: #1a1f5c;
+  --soft: #6a6f9c;
+  --red: #e5004f;
+  --font-display: "Gowun Batang", "Nanum Myeongjo", serif;
+  --font-ui: "Gowun Batang", "Nanum Myeongjo", serif;
+  --fade: 1400ms;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; height: 100%; background: var(--mist); overflow: hidden; }
+body { display: grid; place-items: center; color: var(--ink); font-family: var(--font-ui); }
+body.idle { cursor: none; }
+.stage {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  position: relative;
+  container-type: size;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--sky), var(--mist) 45%, var(--pink));
+  isolation: isolate;
+  /* 크기 기준: 16:9에서는 높이의 1%, 화면이 좁아지면 너비에 맞춰 줄어듦 */
+  --u: min(1cqh, 0.75cqw);
+}
+.stage.fixed { width: min(100vw, calc(100dvh * var(--ar))); height: auto; aspect-ratio: var(--ar); }
+/* 천천히 떠다니는 빛 세 덩이 */
+.aura { position: absolute; inset: -20%; z-index: -1; filter: blur(6cqh); }
+.aura i { position: absolute; border-radius: 50%; opacity: .85; mix-blend-mode: multiply; }
+.aura i:nth-child(1) { width: 60cqmax; height: 60cqmax; left: 5%; top: 10%; background: radial-gradient(circle, var(--sky), transparent 65%); animation: drift1 38s ease-in-out infinite alternate; }
+.aura i:nth-child(2) { width: 55cqmax; height: 55cqmax; right: 2%; top: 0; background: radial-gradient(circle, var(--pink), transparent 65%); animation: drift2 44s ease-in-out infinite alternate; }
+.aura i:nth-child(3) { width: 65cqmax; height: 65cqmax; left: 25%; bottom: -5%; background: radial-gradient(circle, var(--lilac), transparent 65%); animation: drift3 50s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate(18cqw, 12cqh) scale(1.15); } }
+@keyframes drift2 { to { transform: translate(-20cqw, 18cqh) scale(.9); } }
+@keyframes drift3 { to { transform: translate(-12cqw, -16cqh) scale(1.1); } }
+/* 위에서 비껴 들어오는 빛줄기 */
+.rays { position: absolute; inset: -30cqh -20cqw 0; z-index: -1; pointer-events: none;
+  background: repeating-conic-gradient(from 160deg at 42% 0%, rgba(255,255,255,0) 0deg, rgba(255,255,255,.75) 2.5deg, rgba(255,250,253,.2) 5deg, rgba(255,255,255,0) 8deg, rgba(255,255,255,0) 12deg);
+  -webkit-mask-image: radial-gradient(95% 110% at 42% 0%, #000 15%, transparent 80%);
+          mask-image: radial-gradient(95% 110% at 42% 0%, #000 15%, transparent 80%);
+  filter: blur(.7cqh); mix-blend-mode: screen; opacity: .95; transform-origin: 42% 0%;
+  animation: sway 26s ease-in-out infinite alternate, breathe 9s ease-in-out infinite alternate; }
+.glow { position: absolute; left: 30%; top: -30cqh; width: 60cqmax; height: 60cqmax; z-index: -1; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,247,252,.5) 35%, transparent 70%); animation: breathe 9s ease-in-out infinite alternate; }
+@keyframes sway { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
+@keyframes breathe { from { opacity: .6; } to { opacity: 1; } }
+/* 떠오르는 빛 알갱이 */
+.motes { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.motes i { position: absolute; bottom: -2cqh; width: var(--s); height: var(--s); border-radius: 50%;
+  background: radial-gradient(circle, #fff, rgba(255,255,255,0) 70%); opacity: 0;
+  animation: rise var(--d) linear var(--delay) infinite; }
+@keyframes rise { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: .9; } 85% { opacity: .7; } 100% { transform: translate(var(--x), -105cqh); opacity: 0; } }
+.logo { position: absolute; top: 4.6cqh; left: 5cqw; height: calc(5.2 * var(--u)); width: auto; }
+.title {
+  position: absolute; top: 5cqh; left: 0; right: 0; text-align: center;
+  font: 500 calc(2.4 * var(--u)) var(--font-ui); letter-spacing: .32em; color: var(--ink);
+}
+.title::after { content: ""; display: block; width: 4cqw; height: 3px; border-radius: 3px; background: var(--red); margin: calc(1.8 * var(--u)) auto 0; }
+.slide {
+  position: absolute; inset: 15cqh 12cqw 20cqh; display: grid; place-content: center; gap: calc(5 * var(--u)); text-align: center;
+  opacity: 0; transform: translateY(2cqh); transition: opacity var(--fade) ease, transform var(--fade) ease;
+}
+.slide.on { opacity: 1; transform: none; }
+.slide .text { font: 400 var(--size, calc(5.6 * var(--u)))/1.65 var(--font-display); margin: 0; text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); text-shadow: 0 0 calc(3 * var(--u)) rgba(255,255,255,.8); }
+.slide .who { font: 500 calc(2.8 * var(--u)) var(--font-ui); color: var(--red); letter-spacing: .06em; margin: 0; }
+.slide .who::before { content: "— "; }
+.slide.welcome .who { color: var(--soft); font-weight: 400; }
+.slide.welcome .who::before { content: none; }
+.foot { position: absolute; left: 6cqw; right: 6cqw; bottom: 5.5cqh; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: calc(3 * var(--u)); }
+.progress { flex: 1; display: grid; gap: calc(1.4 * var(--u)); }
+.count { font: 400 calc(2 * var(--u)) var(--font-ui); color: var(--soft); font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.qr { display: flex; align-items: center; gap: calc(2.8 * var(--u)); margin-left: auto; }
+.qr .label { font: 400 calc(2.2 * var(--u))/1.5 var(--font-ui); color: var(--soft); text-align: right; }
+.qr .label b { display: block; color: var(--red); font-weight: 700; font-size: calc(2.6 * var(--u)); }
+.qr .code { background: #fff; padding: calc(.8 * var(--u)); border-radius: calc(1 * var(--u)); width: calc(13 * var(--u)); height: calc(13 * var(--u)); box-shadow: 0 calc(.6 * var(--u)) calc(2 * var(--u)) rgba(26, 31, 92, .12); }
+.qr .code img, .qr .code canvas { width: 100% !important; height: 100% !important; display: block; }
+@media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="aura" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="rays" aria-hidden="true"></div>
+  <div class="glow" aria-hidden="true"></div>
+  <div class="motes" id="motes" aria-hidden="true"></div>
+  <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAVAAAABYCAYAAACjzK8AAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4VpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDkuMC1jMDAxIDc5LmMwMjA0YjJkZWYsIDIwMjMvMDIvMDItMTI6MTQ6MjQgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6MTA5MGUwODQtNTEwMy0zZTRhLTljMTUtNWM1MmU0ZDU0YjE0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkU5MUE3MkNCMTg2NTExRUU5ODMyQTc3Mzg5NDFBRDI2IiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkU5MUE3MkNBMTg2NTExRUU5ODMyQTc3Mzg5NDFBRDI2IiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyNC41IChXaW5kb3dzKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjZkY2FiOWM2LWU1M2MtNmU0NC1iOWNhLTczMGU3NDY1YWE3NSIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmIwNjg3Yjk1LTVmM2EtMDE0Mi1hMmE2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" alt="사랑의교회">
+  <div class="title" id="title">오늘 함께 드리는 기도</div>
+  <section class="slide" id="a"><p class="text"></p><p class="who"></p></section>
+  <section class="slide" id="b"><p class="text"></p><p class="who"></p></section>
+  <div class="foot">
+    <div class="progress"><div class="count" id="count"></div></div>
+    <div class="qr" id="qr"><div class="label"><b>기도를 올려 주세요</b>휴대폰 카메라로 찍으면 됩니다</div><div class="code" id="code"></div></div>
+  </div>
+</div>
+
+<script>
+// 샘플: 서버 없이 이 파일 안의 기도를 차례로 한 번씩 보여 줍니다. 기도를 바꾸려면 아래 목록만 고치세요.
+const SAMPLE_PRAYERS = [
+  {
+    "id": "s1",
+    "text": "오늘 목사님 말씀을 들으며 한 주를 다시 시작할 힘을 얻었습니다. 감사합니다.",
+    "name": "김○○ 집사"
+  },
+  {
+    "id": "s2",
+    "text": "찬양대의 찬양이 마음을 따뜻하게 울렸습니다.",
+    "name": ""
+  },
+  {
+    "id": "s3",
+    "text": "새로 이사 온 우리 가족을 반겨 주신 목장 식구들께 감사드립니다.",
+    "name": "이○○ 성도"
+  },
+  {
+    "id": "s4",
+    "text": "시험을 앞둔 아이가 떨지 않고 차분히 준비할 수 있기를 기도합니다.",
+    "name": ""
+  },
+  {
+    "id": "s5",
+    "text": "오랜만에 부모님과 함께 예배드릴 수 있어 참 감사한 주일입니다.",
+    "name": "박○○ 권사"
+  },
+  {
+    "id": "s6",
+    "text": "이번 주도 일터에서 작은 친절을 나누는 사람이 되게 해 주세요.",
+    "name": "최○○ 청년"
+  }
+];
+const SLIDE_SECONDS = 7;
+const SCREEN_TITLE = "오늘 함께 드리는 기도";
+const SUBMIT_URL = "https://eunseo9311.github.io/gido-screen/";
+const store = { watchApproved(cb) { cb(SAMPLE_PRAYERS.map((p, i) => ({ ...p, approvedAt: i }))); return () => {}; } };
+
+const params = new URLSearchParams(location.search);
+const SEC = Math.max(4, Number(params.get("sec")) || SLIDE_SECONDS);
+const $ = (id) => document.getElementById(id);
+$("title").textContent = SCREEN_TITLE;
+
+// 기본은 화면 전체를 채움. ?ratio=16:9, ?ratio=4:3 처럼 주면 그 비율로 고정
+const ratio = (params.get("ratio") || "").match(/^(\d+(?:\.\d+)?)[:x/](\d+(?:\.\d+)?)$/);
+if (ratio) { $("stage").classList.add("fixed"); $("stage").style.setProperty("--ar", `${ratio[1]} / ${ratio[2]}`); }
+
+// 빛 알갱이 뿌리기
+for (let i = 0; i < 22; i++) {
+  const m = document.createElement("i");
+  const r = (a, b) => a + Math.random() * (b - a);
+  m.style.cssText = `left:${r(0, 100)}%;--s:${r(0.6, 1.8).toFixed(2)}cqmin;--d:${r(18, 34).toFixed(1)}s;--delay:${(-r(0, 34)).toFixed(1)}s;--x:${r(-8, 8).toFixed(1)}cqw`;
+  $("motes").append(m);
+}
+
+// QR: 성도용 페이지 주소
+const submitUrl = SUBMIT_URL || new URL("./", location.href).href;
+if (params.get("qr") === "0" || !window.QRCode) $("qr").hidden = true;
+else new QRCode($("code"), { text: submitUrl, width: 256, height: 256, colorDark: "#1a1f5c", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+
+// 재생 상태: 승인된 기도를 승인 순으로 한 번씩만 보여 주고, 다 나가면 안내 화면에서 기다림
+let prayers = [];          // 승인된 기도(승인 순)
+let currentId = null, paused = false, timer = 0, loaded = false;
+const layers = [$("a"), $("b")];
+let front = 0;
+
+const WELCOME = { id: "__welcome", text: "올려 주신 기도를 함께 나눕니다", name: "" };
+
+// 이미 나간 기도. 새로고침해도 다시 나오지 않도록 이 기기에 적어 둠
+const PLAYED_KEY = "gido-played-v1";
+let played = new Set();
+const savePlayed = () => {};
+
+function sizeFor(text) {
+  const n = [...text].length;
+  if (n <= 30) return "calc(7 * var(--u))";
+  if (n <= 60) return "calc(6 * var(--u))";
+  if (n <= 110) return "calc(5 * var(--u))";
+  if (n <= 180) return "calc(4.2 * var(--u))";
+  return "calc(3.6 * var(--u))";
+}
+
+function updateCount() {
+  const i = prayers.findIndex((x) => x.id === currentId);
+  $("count").textContent = i >= 0 ? `${i + 1} / ${prayers.length}` : "";
+}
+
+function paint(p) {
+  if (p.id === currentId) return;
+  const next = layers[1 - front], cur = layers[front];
+  const welcome = p.id === WELCOME.id;
+  next.querySelector(".text").textContent = p.text;
+  next.querySelector(".who").textContent = welcome ? "화면 오른쪽 아래 QR로 기도를 올릴 수 있습니다" : (p.name || "익명의 기도");
+  next.style.setProperty("--size", welcome ? "calc(6.4 * var(--u))" : sizeFor(p.text));
+  next.classList.toggle("welcome", welcome);
+  cur.classList.remove("on");
+  next.classList.add("on");
+  front = 1 - front;
+  currentId = p.id;
+  if (!welcome) { played.add(p.id); savePlayed(); }
+  updateCount();
+}
+
+// 다음 기도(아직 안 나간 것 중 가장 먼저 승인된 것)를 보여 주고, 없으면 안내 화면
+function advance() {
+  clearTimeout(timer);
+  const next = prayers.find((p) => !played.has(p.id));
+  paint(next || WELCOME);
+  if (next && !paused) timer = setTimeout(advance, SEC * 1000);
+}
+
+store.watchApproved((list) => {
+  prayers = list;
+  // 송출 목록에서 내려간 기도는 기록에서 지움(나중에 '다시 송출'하면 다시 나오도록)
+  const ids = new Set(list.map((p) => p.id));
+  let changed = false;
+  for (const id of played) if (!ids.has(id) && id !== currentId) { played.delete(id); changed = true; }
+  if (changed) savePlayed();
+
+  if (!loaded) { loaded = true; advance(); return; }
+  if (currentId === WELCOME.id) { advance(); return; }          // 기다리던 중 새 기도가 들어옴
+  if (!ids.has(currentId)) { advance(); return; }                // 지금 기도가 송출에서 내려감
+  const now = prayers.find((p) => p.id === currentId);           // 지금 기도의 글이 고쳐짐
+  const layer = layers[front];
+  if (now && layer.querySelector(".text").textContent !== now.text) {
+    layer.querySelector(".text").textContent = now.text;
+    layer.style.setProperty("--size", sizeFor(now.text));
+  }
+  updateCount();
+}, (err) => {
+  console.error(err);
+  $("count").textContent = "연결이 끊겼습니다. 인터넷을 확인해 주세요.";
+});
+
+// 조작: → 다음 기도로 넘기기, 스페이스 멈춤
+addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight" || e.key === "PageDown") advance();
+  else if (e.key === " ") {
+    e.preventDefault(); paused = !paused;
+    clearTimeout(timer);
+    if (!paused) timer = setTimeout(advance, SEC * 1000);
+  }
+  else if (e.key === "f") toggleFull();
+});
+$("stage").addEventListener("click", toggleFull);
+function toggleFull() {
+  if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+  else document.documentElement.requestFullscreen?.().catch(() => {});
+}
+
+// 커서·안내 숨김, 화면 꺼짐 방지
+let idleT = 0;
+const wake = () => { document.body.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add("idle"), 3000); };
+addEventListener("mousemove", wake); wake();
+let lock = null;
+async function keepAwake() { try { lock = await navigator.wakeLock?.request("screen"); } catch {} }
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") keepAwake(); });
+keepAwake();
+</script>
+</body>
+</html>
