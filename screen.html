@@ -29,21 +29,24 @@ html, body { margin: 0; height: 100%; background: var(--mist); overflow: hidden;
 body { display: grid; place-items: center; color: var(--ink); font-family: var(--font-ui); }
 body.idle { cursor: none; }
 .stage {
-  width: min(100vw, calc(100vh * 16 / 9));
-  aspect-ratio: 16 / 9;
-  max-width: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   position: relative;
   container-type: size;
   overflow: hidden;
   background: linear-gradient(135deg, var(--sky), var(--mist) 45%, var(--pink));
   isolation: isolate;
+  /* 크기 기준: 16:9에서는 높이의 1%, 화면이 좁아지면 너비에 맞춰 줄어듦 */
+  --u: min(1cqh, 0.75cqw);
 }
+.stage.fixed { width: min(100vw, calc(100dvh * var(--ar))); height: auto; aspect-ratio: var(--ar); }
 /* 천천히 떠다니는 빛 세 덩이 */
 .aura { position: absolute; inset: -20%; z-index: -1; filter: blur(6cqh); }
 .aura i { position: absolute; border-radius: 50%; opacity: .85; mix-blend-mode: multiply; }
-.aura i:nth-child(1) { width: 60cqw; height: 60cqw; left: 5%; top: 10%; background: radial-gradient(circle, var(--sky), transparent 65%); animation: drift1 38s ease-in-out infinite alternate; }
-.aura i:nth-child(2) { width: 55cqw; height: 55cqw; right: 2%; top: 0; background: radial-gradient(circle, var(--pink), transparent 65%); animation: drift2 44s ease-in-out infinite alternate; }
-.aura i:nth-child(3) { width: 65cqw; height: 65cqw; left: 25%; bottom: -5%; background: radial-gradient(circle, var(--lilac), transparent 65%); animation: drift3 50s ease-in-out infinite alternate; }
+.aura i:nth-child(1) { width: 60cqmax; height: 60cqmax; left: 5%; top: 10%; background: radial-gradient(circle, var(--sky), transparent 65%); animation: drift1 38s ease-in-out infinite alternate; }
+.aura i:nth-child(2) { width: 55cqmax; height: 55cqmax; right: 2%; top: 0; background: radial-gradient(circle, var(--pink), transparent 65%); animation: drift2 44s ease-in-out infinite alternate; }
+.aura i:nth-child(3) { width: 65cqmax; height: 65cqmax; left: 25%; bottom: -5%; background: radial-gradient(circle, var(--lilac), transparent 65%); animation: drift3 50s ease-in-out infinite alternate; }
 @keyframes drift1 { to { transform: translate(18cqw, 12cqh) scale(1.15); } }
 @keyframes drift2 { to { transform: translate(-20cqw, 18cqh) scale(.9); } }
 @keyframes drift3 { to { transform: translate(-12cqw, -16cqh) scale(1.1); } }
@@ -54,7 +57,7 @@ body.idle { cursor: none; }
           mask-image: radial-gradient(95% 110% at 42% 0%, #000 15%, transparent 80%);
   filter: blur(.7cqh); mix-blend-mode: screen; opacity: .95; transform-origin: 42% 0%;
   animation: sway 26s ease-in-out infinite alternate, breathe 9s ease-in-out infinite alternate; }
-.glow { position: absolute; left: 30%; top: -30cqh; width: 60cqh; height: 60cqh; z-index: -1; border-radius: 50%; pointer-events: none;
+.glow { position: absolute; left: 30%; top: -30cqh; width: 60cqmax; height: 60cqmax; z-index: -1; border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,247,252,.5) 35%, transparent 70%); animation: breathe 9s ease-in-out infinite alternate; }
 @keyframes sway { from { transform: rotate(-4deg); } to { transform: rotate(5deg); } }
 @keyframes breathe { from { opacity: .6; } to { opacity: 1; } }
@@ -64,29 +67,29 @@ body.idle { cursor: none; }
   background: radial-gradient(circle, #fff, rgba(255,255,255,0) 70%); opacity: 0;
   animation: rise var(--d) linear var(--delay) infinite; }
 @keyframes rise { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: .9; } 85% { opacity: .7; } 100% { transform: translate(var(--x), -105cqh); opacity: 0; } }
-.logo { position: absolute; top: 4.6cqh; left: 5cqw; height: 5.2cqh; width: auto; }
+.logo { position: absolute; top: 4.6cqh; left: 5cqw; height: calc(5.2 * var(--u)); width: auto; }
 .title {
   position: absolute; top: 5cqh; left: 0; right: 0; text-align: center;
-  font: 500 2.4cqh var(--font-ui); letter-spacing: .32em; color: var(--ink);
+  font: 500 calc(2.4 * var(--u)) var(--font-ui); letter-spacing: .32em; color: var(--ink);
 }
-.title::after { content: ""; display: block; width: 4cqw; height: 3px; border-radius: 3px; background: var(--red); margin: 1.8cqh auto 0; }
+.title::after { content: ""; display: block; width: 4cqw; height: 3px; border-radius: 3px; background: var(--red); margin: calc(1.8 * var(--u)) auto 0; }
 .slide {
-  position: absolute; inset: 15cqh 12cqw 20cqh; display: grid; place-content: center; gap: 5cqh; text-align: center;
+  position: absolute; inset: 15cqh 12cqw 20cqh; display: grid; place-content: center; gap: calc(5 * var(--u)); text-align: center;
   opacity: 0; transform: translateY(2cqh); transition: opacity var(--fade) ease, transform var(--fade) ease;
 }
 .slide.on { opacity: 1; transform: none; }
-.slide .text { font: 400 var(--size, 5.6cqh)/1.65 var(--font-display); margin: 0; text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); text-shadow: 0 0 3cqh rgba(255,255,255,.8); }
-.slide .who { font: 500 2.8cqh var(--font-ui); color: var(--red); letter-spacing: .06em; margin: 0; }
+.slide .text { font: 400 var(--size, calc(5.6 * var(--u)))/1.65 var(--font-display); margin: 0; text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; color: var(--ink); text-shadow: 0 0 calc(3 * var(--u)) rgba(255,255,255,.8); }
+.slide .who { font: 500 calc(2.8 * var(--u)) var(--font-ui); color: var(--red); letter-spacing: .06em; margin: 0; }
 .slide .who::before { content: "— "; }
 .slide.welcome .who { color: var(--soft); font-weight: 400; }
 .slide.welcome .who::before { content: none; }
-.foot { position: absolute; left: 6cqw; right: 6cqw; bottom: 5.5cqh; display: flex; align-items: flex-end; justify-content: space-between; gap: 3cqw; }
-.progress { flex: 1; display: grid; gap: 1.4cqh; }
-.count { font: 400 2cqh var(--font-ui); color: var(--soft); font-variant-numeric: tabular-nums; letter-spacing: .08em; }
-.qr { display: flex; align-items: center; gap: 1.6cqw; }
-.qr .label { font: 400 2.2cqh/1.5 var(--font-ui); color: var(--soft); text-align: right; }
-.qr .label b { display: block; color: var(--red); font-weight: 700; font-size: 2.6cqh; }
-.qr .code { background: #fff; padding: .8cqh; border-radius: 1cqh; width: 13cqh; height: 13cqh; box-shadow: 0 .6cqh 2cqh rgba(26, 31, 92, .12); }
+.foot { position: absolute; left: 6cqw; right: 6cqw; bottom: 5.5cqh; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: calc(3 * var(--u)); }
+.progress { flex: 1; display: grid; gap: calc(1.4 * var(--u)); }
+.count { font: 400 calc(2 * var(--u)) var(--font-ui); color: var(--soft); font-variant-numeric: tabular-nums; letter-spacing: .08em; }
+.qr { display: flex; align-items: center; gap: calc(2.8 * var(--u)); margin-left: auto; }
+.qr .label { font: 400 calc(2.2 * var(--u))/1.5 var(--font-ui); color: var(--soft); text-align: right; }
+.qr .label b { display: block; color: var(--red); font-weight: 700; font-size: calc(2.6 * var(--u)); }
+.qr .code { background: #fff; padding: calc(.8 * var(--u)); border-radius: calc(1 * var(--u)); width: calc(13 * var(--u)); height: calc(13 * var(--u)); box-shadow: 0 calc(.6 * var(--u)) calc(2 * var(--u)) rgba(26, 31, 92, .12); }
 .qr .code img, .qr .code canvas { width: 100% !important; height: 100% !important; display: block; }
 .paused @media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
 </style>
@@ -116,11 +119,15 @@ const SEC = Math.max(4, Number(params.get("sec")) || SLIDE_SECONDS);
 const $ = (id) => document.getElementById(id);
 $("title").textContent = SCREEN_TITLE;
 
+// 기본은 화면 전체를 채움. ?ratio=16:9, ?ratio=4:3 처럼 주면 그 비율로 고정
+const ratio = (params.get("ratio") || "").match(/^(\d+(?:\.\d+)?)[:x/](\d+(?:\.\d+)?)$/);
+if (ratio) { $("stage").classList.add("fixed"); $("stage").style.setProperty("--ar", `${ratio[1]} / ${ratio[2]}`); }
+
 // 빛 알갱이 뿌리기
 for (let i = 0; i < 22; i++) {
   const m = document.createElement("i");
   const r = (a, b) => a + Math.random() * (b - a);
-  m.style.cssText = `left:${r(0, 100)}%;--s:${r(0.6, 1.8).toFixed(2)}cqh;--d:${r(18, 34).toFixed(1)}s;--delay:${(-r(0, 34)).toFixed(1)}s;--x:${r(-8, 8).toFixed(1)}cqw`;
+  m.style.cssText = `left:${r(0, 100)}%;--s:${r(0.6, 1.8).toFixed(2)}cqmin;--d:${r(18, 34).toFixed(1)}s;--delay:${(-r(0, 34)).toFixed(1)}s;--x:${r(-8, 8).toFixed(1)}cqw`;
   $("motes").append(m);
 }
 
@@ -145,11 +152,11 @@ const savePlayed = () => { try { localStorage.setItem(PLAYED_KEY, JSON.stringify
 
 function sizeFor(text) {
   const n = [...text].length;
-  if (n <= 30) return "7cqh";
-  if (n <= 60) return "6cqh";
-  if (n <= 110) return "5cqh";
-  if (n <= 180) return "4.2cqh";
-  return "3.6cqh";
+  if (n <= 30) return "calc(7 * var(--u))";
+  if (n <= 60) return "calc(6 * var(--u))";
+  if (n <= 110) return "calc(5 * var(--u))";
+  if (n <= 180) return "calc(4.2 * var(--u))";
+  return "calc(3.6 * var(--u))";
 }
 
 function updateCount() {
@@ -163,7 +170,7 @@ function paint(p) {
   const welcome = p.id === WELCOME.id;
   next.querySelector(".text").textContent = p.text;
   next.querySelector(".who").textContent = welcome ? "화면 오른쪽 아래 QR로 기도를 올릴 수 있습니다" : (p.name || "익명의 기도");
-  next.style.setProperty("--size", welcome ? "6.4cqh" : sizeFor(p.text));
+  next.style.setProperty("--size", welcome ? "calc(6.4 * var(--u))" : sizeFor(p.text));
   next.classList.toggle("welcome", welcome);
   cur.classList.remove("on");
   next.classList.add("on");
