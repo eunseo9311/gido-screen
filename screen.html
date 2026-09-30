@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-/* 16:9 무대 하나. 하늘·분홍·보라 빛이 천천히 섞이는 밝은 바탕에 기도 한 장 */
+/* 화면 전체를 채우는 무대 하나. 하늘·분홍·보라 빛이 천천히 섞이는 밝은 바탕에 기도 한 장 */
 :root {
   --sky: #bfe3ff;
   --pink: #ffd3e6;
@@ -91,7 +91,7 @@ body.idle { cursor: none; }
 .qr .label b { display: block; color: var(--red); font-weight: 700; font-size: calc(2.6 * var(--u)); }
 .qr .code { background: #fff; padding: calc(.8 * var(--u)); border-radius: calc(1 * var(--u)); width: calc(13 * var(--u)); height: calc(13 * var(--u)); box-shadow: 0 calc(.6 * var(--u)) calc(2 * var(--u)) rgba(26, 31, 92, .12); }
 .qr .code img, .qr .code canvas { width: 100% !important; height: 100% !important; display: block; }
-.paused @media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
+@media (prefers-reduced-motion: reduce) { .slide { transition: opacity 300ms linear; transform: none; } .aura i, .rays, .glow { animation: none; } .motes { display: none; } }
 </style>
 </head>
 <body>
